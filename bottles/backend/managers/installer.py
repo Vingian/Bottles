@@ -270,13 +270,18 @@ class InstallerManager:
             current_user = os.getenv("USER")
             conf_path = conf_path.replace("userdir/", f"drive_c/users/{current_user}/")
 
-        conf_path = f"{bottle}/{conf_path}"
-        _conf = ConfigManager(config_file=conf_path, config_type=conf_type)
+        full_conf_path = f"{bottle}/{conf_path}"
+        _conf = ConfigManager(config_file=full_conf_path, config_type=conf_type)
 
         for d in del_keys:
             _conf.del_key(d)
 
         _conf.merge_dict(upd_keys)
+
+        if conf_path == "bottle.yml" and (conf_type == "yaml" or conf_type == "yml"):
+            config_load = config.load(full_conf_path)
+            if config_load.status:
+                config.__dict__.update(config_load.data)
 
     def __set_parameters(self, config: BottleConfig, new_params: dict):
         _config = config
