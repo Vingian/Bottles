@@ -252,6 +252,14 @@ class BottleConfig(DictCompatMixIn):
         # cleanup unexpected fields
         data = cls._filter(data)
 
+        # ensure that environment variables are strings
+        if "Environment_Variables" in data:
+            env_vars = {
+                k: str(v) for k, v in data["Environment_Variables"].items()
+                if isinstance(v, (int, float, str, bool))
+            }
+            data["Environment_Variables"] = env_vars
+
         return data
 
     @classmethod
